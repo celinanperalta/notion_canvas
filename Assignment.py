@@ -1,22 +1,39 @@
 import re
+from datetime import datetime, timezone
+from time import strftime
+import config as config
+import pytz
 
-
+from util import cleanhtml
 class Assignment:
-    def __init__(self, assignment, courses, db):
-        self.course = courses[assignment['course_id']]
+    def __init__(self, assignment, course_name):
+        self.course_name = course_name[6:]
         self.id = assignment['id']
         self.name = assignment['name']
-        self.status = "To Do"
-        self.description = self.cleanhtml(assignment['description'])
-        self.due_at_date = assignment['due_at_date']
+        self.status = "Not Started"
+        self.description = assignment['description'][0:2000]
+        self.due_at_date = datetime.now() if not isinstance(assignment['due_at_date'], datetime) else assignment['due_at_date']
         self.html_url = assignment['html_url']
-        self.assignment_type = "Uncategorized"
-        self.db = db
+        self.assignment_type = "Quiz" if assignment['is_quiz_assignment'] else "Assignment"
 
-    def cleanhtml(self, raw_html):
-        # cleanr = re.compile('<.*?>')
-        cleanr = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
-        cleantext = re.sub(cleanr, '', raw_html)
-        return cleantext
+    def create_notion_page(self):
+        new_page = {
+                "Assignment ID" : {"type": "number", "number" : self.id},
+                "Name" : {"type": "title", "title": [{"type": "text", "text": {"content": self.name}}]},
+                "Status" : {"type": "status", "status": {"name": "Not Started"}},
+                "Class" : {"type": "select", "select": {"name": self.course_name}},
+                "Assignment Type" : {"type": "select", "select": {"name": self.assignment_type}},
+                "Due Date" : {"type" : "date", "date" : {"start": self.due_at_date.astimezone(pytz.timezone('US/Eastern')).strftime('%Y-%m-%dT%H:%M:%S'), "time_zone": "America/New_York"}},
+                "Link" : {"type" : "url", "url" : self.html_url}
+        }
 
-    # def create_query(self, entry):
+        children = [
+            {
+                "object": "block",
+                "type": "paragraph",
+                "paragraph": {
+                "rich_text": [{ "type": "text", "text": { "content": cleanhtml(self.description)} }]
+                }
+            }
+        ]
+        return new_page, children
