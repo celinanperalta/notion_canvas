@@ -2,7 +2,6 @@
 Pull Canvas assignments for current term into working Notion database.
 
 ```
-git clone 
 cd notion_canvas
 chmod +x run.sh
 ./run.sh
