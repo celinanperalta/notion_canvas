@@ -7,9 +7,6 @@ import re
 from datetime import datetime, timezone
 import NotionDB
 
-# Get current classes
-
-
 class AssignmentDB:
     def __init__(self):
         self.canvas = Canvas(config.CANVAS_API_URL, config.CANVAS_API_KEY)
@@ -21,7 +18,8 @@ class AssignmentDB:
 
     def __get_current_courses(self):
         current_classes = {}
-        courses = list(filter(lambda x: config.CANVAS_TERM_NAME in x.name, self.user.get_courses(enrollment_state='active')))
+        # lol @ this logic
+        courses = list(filter(lambda x: config.CANVAS_TERM_NAME in x.name or x.name in config.CANVAS_TERM_NAME, self.user.get_courses(enrollment_state='active')))
         for course in courses:
             current_classes[course.id] = course
         return current_classes
@@ -61,3 +59,5 @@ class AssignmentDB:
 
     def get_active_courses(self):
         return self.current_courses
+
+        

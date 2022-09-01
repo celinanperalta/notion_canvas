@@ -4,17 +4,25 @@ from time import strftime
 import config as config
 import pytz
 
-from util import cleanhtml
+from util import cleanhtml, format_course_name
 class Assignment:
     def __init__(self, assignment, course_name):
-        self.course_name = course_name[6:]
+        self.course_name = format_course_name(course_name)
         self.id = assignment['id']
         self.name = assignment['name']
         self.status = "Not Started"
         self.description = assignment['description'][0:2000]
         self.due_at_date = datetime.now() if not isinstance(assignment['due_at_date'], datetime) else assignment['due_at_date']
         self.html_url = assignment['html_url']
-        self.assignment_type = "Quiz" if assignment['is_quiz_assignment'] else "Assignment"
+        self.assignment_type = self.__get_assignment_type(assignment)
+
+    def __get_assignment_type(self, assignment):
+        if isinstance(assignment['due_at_date'], datetime):
+            return "Quiz" if assignment['is_quiz_assignment'] else "Assignment"
+        else:
+            return "Quiz" if assignment['is_quiz_assignment'] else "Event"
+
+        
 
     def create_notion_page(self):
         new_page = {

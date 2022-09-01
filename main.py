@@ -2,8 +2,7 @@ from AssignmentDB import AssignmentDB
 from datetime import datetime
 import NotionDB as ndb
 
-def main():
-
+def run_canvas_to_notion():
     adb = AssignmentDB()
 
     assignments = adb.get_current_assignments()
@@ -13,7 +12,11 @@ def main():
 
     for i in range(0, len(assignment_ids)):
         adb.create_assignment(assignments.get(assignment_ids[i]))
-    
+
+def main():
+
+    run_canvas_to_notion()
+        
     return 0
 
 

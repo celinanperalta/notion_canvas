@@ -37,4 +37,3 @@ def get_current_assignments(current_classes):
 
 
 
-
