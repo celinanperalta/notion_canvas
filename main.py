@@ -11,7 +11,11 @@ def run_canvas_to_notion():
     assignment_ids = list(filter(lambda x: x not in existing_assignments, assignments))
 
     for i in range(0, len(assignment_ids)):
+        print("Importing assignment %s/%s\n", i+1, len(assignment_ids))
         adb.create_assignment(assignments.get(assignment_ids[i]))
+    
+    if (len(assignment_ids) == 0):
+        print("Nothing new.")
 
 def main():
 
