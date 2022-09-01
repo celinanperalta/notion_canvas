@@ -1,10 +1,7 @@
 from canvasapi import Canvas
-from canvasapi import assignment
-import notion_client
 from Assignment import Assignment
 import config as config
 import re
-from datetime import datetime, timezone
 import NotionDB
 
 class AssignmentDB:
@@ -46,10 +43,6 @@ class AssignmentDB:
             for assignment in assignments:
                 print(getattr(assignment, "name", ""))
                 print(getattr(assignment, "has_submitted_submissions", ""))
-
-    def init_db(self):
-        row = self.cv.collection.add_row()
-        row.course = []
 
     def create_assignment(self, assignment):
         course = self.current_courses[assignment['course_id']]
