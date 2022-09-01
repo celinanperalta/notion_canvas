@@ -1,4 +1,4 @@
-# notion_canvas
+# Canvas/Notion Integration
 Pull Canvas assignments for current term into working Notion database.
 
 Todo:
