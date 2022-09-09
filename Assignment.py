@@ -24,7 +24,7 @@ class Assignment:
 
         
 
-    def create_notion_page(self):
+    def get_notion_properties(self):
         new_page = {
                 "Assignment ID" : {"type": "number", "number" : self.id},
                 "Name" : {"type": "title", "title": [{"type": "text", "text": {"content": self.name}}]},
@@ -45,3 +45,19 @@ class Assignment:
             }
         ]
         return new_page, children
+
+    def get_updated_notion_properties(self):
+        updated_page = {
+                "Assignment ID" : {"type": "number", "number" : self.id},
+                "Name" : {"type": "title", "title": [{"type": "text", "text": {"content": self.name}}]},
+                "Class" : {"type": "select", "select": {"name": self.course_name}},
+                "Assignment Type" : {"type": "select", "select": {"name": self.assignment_type}},
+                "Due Date" : {"type" : "date", "date" : {"start": self.due_at_date.astimezone(pytz.timezone('US/Eastern')).strftime('%Y-%m-%dT%H:%M:%S'), "time_zone": "America/New_York"}},
+                "Link" : {"type" : "url", "url" : self.html_url}
+        }
+
+        return updated_page
+
+
+
+        

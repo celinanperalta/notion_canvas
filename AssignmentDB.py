@@ -47,8 +47,47 @@ class AssignmentDB:
     def create_assignment(self, assignment):
         course = self.current_courses[assignment['course_id']]
         row = Assignment(assignment, course.name)
-        props, children = row.create_notion_page()
+        props, children = row.get_notion_properties()
         self.client.pages.create(parent={"database_id":config.NOTION_LINK}, properties = props, children = children)
+
+    def update_assignment(self, assignment_id, new_assignment):
+        query = self.client.databases.query(
+            **{
+            "database_id":config.NOTION_LINK,
+            "filter": {
+                "and": [
+                    {
+                        "property": "Assignment ID",
+                        "number": {
+                            "equals": assignment_id
+                        },
+                    },
+                    {
+                        "property": "Status",
+                        "status": {
+                            "does_not_equal": "Done"
+                        }
+                    }
+                ]
+            }
+        }).get("results")
+
+        if len(query) == 0:
+            return 1
+        
+        page_id = query[0]["id"]
+        print(page_id)
+
+        if page_id == "":
+            return 1
+        
+        course = self.current_courses[new_assignment['course_id']]
+        row = Assignment(new_assignment, course.name)
+        props = row.get_updated_notion_properties()
+
+        self.client.pages.update(page_id=page_id, properties = props)
+
+        return 0
 
     def get_active_courses(self):
         return self.current_courses
